@@ -14,11 +14,10 @@ can be created by the button *Primary Key*
 XML Import from FritzBox router comes with an uniqueid. This will be copied to the other tables.
 Caution, if you have double entries in your phone book! This could rise some problems.
 
-Further features are planed:
-- add new contacts.
-- export to Fritz!Box XML format for re-import to the Fritz!Box router
+Next features for implementation:
+- add new contacts to  the database
+- export as Fritz!Box XML format for re-import to the Fritz!Box router
 - analysis of data, double entries, empty content fields
 - import vCard format from iPhone
-- add a second tab for the postal address, maybe pictures
-
+- complete second tab for the postal address, birthdays, maybe pictures
 
