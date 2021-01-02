@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phonebooks>contact 
+  <phonebook name="Telefonbuch">
+    <contact>
+      <category>0</category>
+      <person>
+        <realName>Salvadore Dali</realName>
+      </person>
+      <telephony nid="2">
+        <number type="home" prio="1" id="0">34972677500</number>
+        <number type="mobile" prio="0" id="1">017522222222</number>
+      </telephony>
+      <services />
+      <setup />
+      <features doorphone="0" />
+      <mod_time>1554145805</mod_time>
+      <uniqueid>21</uniqueid>
+    </contact>
+    <contact>
+      <category>0</category>
+      <person>
+        <realName>Luther Martin &amp; Katharina von Bora</realName>
+        <imageURL>file:///var/InternerSpeicher/FRITZ/fonpix/1608750149-0.jpg</imageURL>
+      </person>
+      <telephony nid="3">
+        <number type="home" prio="1" id="0">07141999555</number>
+        <number type="mobile" prio="0" id="1">0153444455555</number>
+        <number type="mobile" prio="0" id="2">01717654321</number>
+      </telephony>
+      <services />
+      <setup />
+      <features doorphone="0" />
+      <mod_time>1588961505</mod_time>
+      <uniqueid>25</uniqueid>
+    </contact>
+    <contact>
+      <category>0</category>
+      <person>
+        <realName>Kafka Franz</realName>
+      </person>
+      <telephony nid="1">
+        <number type="work" prio="1" id="0">07118889994</number>
+      </telephony>
+      <services />
+      <setup />
+      <features doorphone="0" />
+      <mod_time>1549389388</mod_time>
+      <uniqueid>71</uniqueid>
+    </contact>
+    <contact>
+      <category>0</category>
+      <person>
+        <realName>Don Quixote</realName>
+      </person>
+      <telephony nid="2">
+        <number type="work" prio="1" id="0">0034918889994</number>
+        <number type="fax_work" prio="0" id="1">07141943421</number>
+      </telephony>
+      <services />
+      <setup />
+      <features doorphone="0" />
+      <mod_time>1756389388</mod_time>
+      <uniqueid>81</uniqueid>
+    </contact>
+    <contact>
+      <category />
+      <person>
+        <realName>Hermann12</realName>
+        <imageURL />
+      </person>
+      <telephony nid="3">
+        <number type="work" id="0" prio="1">+497141480000</number>
+        <number type="home" id="1">+497141480000</number>
+        <number type="mobile" id="2">+497141480000</number>
+      </telephony>
+      <mod_time>1756389388</mod_time>
+      <uniqueid>201</uniqueid>
+    </contact>
+  </phonebook>
+</phonebooks>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--Version: 2488-->
+<!--Count: 263-->
+<phonebooks>
+  <phonebook owner="1" name="iPhone">
+    <contact>
+      <category></category>
+      <person>
+        <realName>Salvadore Dali</realName>
+        <imageURL></imageURL>
+      </person>
+      <telephony>
+        <number type="work">34972677500</number>
+        <number type="home">017522222222</number>
+        <number type="fax_home">004922334455</number>
+      </telephony>
+      <service>
+        <email classifier="business">info@artgallery.de</email>
+      </service>
+    </contact>
+    <contact>
+      <category></category>
+      <person>
+        <realName>Luther Martin &amp; Katharina von Bora</realName>
+        <imageURL></imageURL>
+      </person>
+      <telephony>
+        <number type="mobile">07141999555</number>
+      </telephony>
+      <service></service>
+    </contact>
+    <contact>
+      <category></category>
+      <person>
+        <realName>Kafka Franz</realName>
+        <imageURL></imageURL>
+      </person>
+      <telephony>
+        <number type="home">+4911223344556</number>
+        <number type="mobile">+4915122222222</number>
+        <number type="work">+491710022003300</number>
+      </telephony>
+      <service>
+        <email classifier="label:">iqfas@gmx.de</email>
+        <email classifier="business">Franz.Kafka@literat.com</email>
+      </service>
+    </contact>
+        <contact>
+      <category></category>
+      <person>
+        <realName>Don Quixote</realName>
+        <imageURL></imageURL>
+      </person>
+      <telephony>
+        <number type="home">+4911223344556</number>
+        <number type="mobile">+4915199334455</number>
+        <number type="fax_work">07143999999</number>
+      </telephony>
+      <service>
+        <email classifier="label:">info@gmx.de</email>
+        <email classifier="business">Don.Quixote@fantasia.es</email>
+      </service>
+    </contact>
+  </phonebook>
+</phonebooks>
+
