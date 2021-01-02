@@ -5,7 +5,7 @@ Create a SQLite3 database via import of XML file created by FritzBox or FritzFon
 ![XML Phone Book Database](https://github.com/Hermann12/XML_Phone_Book_Database/blob/main/Pictures/XML%20Phone%20Book%20Database_20210102.jpg)
 
 With this gui an xml file can create a sqlite3 database. 
-XML Import from FritzFon app has no uniquid. This can be created via button *Create uid*. Also Primary Key and Foreign Key of the three database tables,
+XML Import from FritzFon app has no uniqueid. This can be created via button *Create uid*. Also Primary Key and Foreign Key of the three database tables,
 - contacts
 - numbers
 - mails
