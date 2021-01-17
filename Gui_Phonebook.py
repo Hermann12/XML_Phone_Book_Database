@@ -406,7 +406,7 @@ class Phonebook:
             cursor = connection.cursor()
             cursor.execute("SELECT number, type, prio, id, uniqueid FROM numbers WHERE realName=?;",(indName,))
             data = cursor.fetchall()
-            print(data)
+            print("Out of DB:",data)
             
             for row in data:
                 if row[1] == 'home':
@@ -421,17 +421,17 @@ class Phonebook:
                     if len(self.mobile) >1 and '' in self.mobile:
                         self.mobile.remove('')
                 
-                if row[1] == 'work':
+                if row[1] == 'business':
                     self.business.append(row[0])
                     print(row[0])
-                    print('WORK:',self.business)
+                    print('business:',self.business)
                     if len(self.business) >1 and '' in self.business:
                         self.business.remove('')
                     
-                if row[1] == 'fax_work':
+                if row[1] == 'fax_work' or row[1] == 'fax_home':
                     self.fax.append(row[0])
                     print(row[0])
-                    print('FAX_WORK:',self.fax)
+                    print('FAX_WORK/HOME:',self.fax)
                     if len(self.fax) >1 and '' in self.fax:
                         self.fax.remove('')
                     
@@ -455,7 +455,7 @@ class Phonebook:
             print(data)
             
             for row in data:
-                if row[1] == 'private' or row[1] == 'business' or row[1] == 'other' or row[1] == 'label:':
+                if row[1] == 'private' or row[1] == 'business' or row[1] == 'other' or row[1] == 'label':
                     self.email.append(row[0])
                     print('HOME:',self.phone_home)
                     if len(self.email) >1 and '' in self.email:
