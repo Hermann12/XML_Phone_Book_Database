@@ -35,6 +35,6 @@ Next features for implementation:
 The software useing the MIT-Licence.#
 
 ## Notes:
-</br>*This is a private project and have nothing to do with the German company AVM! The name Fritz!Box and Fritz!Fon are copyright by AVM*
-</br>*and have nothing to do with the US company Apple! The names iPhone and iCloude are copyright by Apple*
+</br>*This is a private project and have nothing to do with the German company AVM,and with the US company Apple! 
+</br>*The name Fritz!Box and Fritz!Fon are copyright by AVM* and iPhone and iCloude are copyright by Apple*
 
