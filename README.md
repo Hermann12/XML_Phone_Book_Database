@@ -8,6 +8,8 @@ This second option create a database with post address, birthday and notes from 
 
 ![XML Phone Book Database](Pictures/XML_Phone_Book_Database_20210307_db_tb.jpg?raw=true)
 
+![XML Phone Book Database Search](Pictures/XML_Phone_Book_Database_20210307_search_tb.jpg?raw=true)
+
 With this Gui an xml file import will create a sqlite3 database. 
 XML Import from FritzFon app has no uniqueid. This can be created via button *Create uid*. Also the Primary Key and the Foreign Key of the database tables,
 - contacts
