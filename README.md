@@ -5,10 +5,11 @@ As a scond option a vCard.vcf file exported from Apple iCloud* contacts could co
 This second option create a database with post address, birthday and notes from your iPhone* contacts.
 
 
-
 ![XML Phone Book Database](Pictures/XML_Phone_Book_Database_20210307_db_tb.jpg?raw=true)
+Fig. 1: Phone Book
 
 ![XML Phone Book Database Search](Pictures/XML_Phone_Book_Database_20210307_search_tb.jpg?raw=true)
+Fig. 2: Phone Book - Search
 
 With this Gui an xml file import will create a sqlite3 database. 
 XML Import from FritzFon app has no uniqueid. This can be created via button *Create uid*. Also the Primary Key and the Foreign Key of the database tables,
@@ -35,5 +36,5 @@ The software useing the MIT-Licence.#
 
 ## Notes:
 </br>*This is a private project and have nothing to do with the German company AVM! The name Fritz!Box and Fritz!Fon are copyright by AVM*
-</br>*This is a private project and have nothing to do with the US company Apple! The names iPhone and iCloude are copyright by AVM*
+</br>*and have nothing to do with the US company Apple! The names iPhone and iCloude are copyright by Apple*
 
