@@ -1,4 +1,5 @@
-# XML_Phone_Book_Database
+# XML Phone Book Database 
+##### (sqlite3)
 Create a SQLite3 database via import of XML file created by FritzBox or FritzFon App. 
 </br>*This is a private project and have nothing to do with the German company AVM! The name Fritz!Box and Fritz!Fon are copyright by AVM*
 As a scond option a vCard.vcf file exported from Apple iCloud contacts could converted to xml and afterwards imported in a SQLite3 database.
@@ -15,6 +16,7 @@ XML Import from FritzFon app has no uniqueid. This can be created via button *Cr
 - address
 - birthday
 - note
+
 can be created by the button *Primary Key*
 
 XML Import from FritzBox router comes with an uniqueid. This will be copied to the other tables.
@@ -25,4 +27,7 @@ Next features for implementation:
 - export as Fritz!Box XML format for re-import to the Fritz!Box router
 - analysis of data, double entries, empty content fields
 - complete second tab for the postal address, birthdays, maybe pictures
+
+## Licence
+The software useing the MIT-Licence.
 
