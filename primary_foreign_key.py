@@ -1,7 +1,13 @@
-import sqlite3
+############################################################
 # Primary Key and Foreign Keys from script.sql
 # SQLite script "Primary_Foreign_Key.sql"
 # Copy the tables and create it abgain with key
+#
+# XML_Phone_Book_Database
+#
+## Author (Pseudonym): Hermann12; Date: 10.01.2021
+############################################################
+import sqlite3
 
 def create_key(db_file):
     # Create Promary Key and Foreign Keys
@@ -20,5 +26,5 @@ def create_key(db_file):
        
 if __name__ == '__main__':
     """ Input Database file  """
-    create_key("04_Fritz_Phonebook.db")
+    # create_key("04_Fritz_Phonebook.db")
     print('Finished')

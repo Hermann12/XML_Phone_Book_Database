@@ -5,6 +5,7 @@
 # contacts: realNam, category, uniqueid, mod_time, *mod_date
 # numbers: realName, nid, number, type, prio, id, quickdial, *uniqueid
 # emails: realName, email, classifier, *uniqueid
+# address: address, index, realName, aid, pobox, ext, street, locality, region, code, country, label, type, prio, id, *uniqueid
 #
 # Test files:
 # - Phonebook XML Export from AVM Fritz!Box - Base w/wo picture
@@ -17,6 +18,8 @@
 #
 # Author (Pseudonym): Hermann12; Date: 24.12.2020
 ############################################################
+import timeit
+import re
 import pandas as pd
 import xml.etree.ElementTree as ET
 
@@ -24,7 +27,9 @@ import xml.etree.ElementTree as ET
 def read_xml(xml_file, db_name):
     """ Parse AVM XML-Phonebook, collect data
         for contacts table and
-        for numbers table to prepare sqlite3
+        for numbers table
+        for mails table
+        to prepare sqlite3
     """
     
     phonebook_tree = ET.parse(xml_file)
@@ -172,6 +177,149 @@ def read_xml(xml_file, db_name):
         # print(mails_row)
         # print('DF:', df_mails)
         # print(df_mails.info())
+        
+    # Dataframe of address
+    df_adr_column = ["realName","aid","pobox", "ext", "street","locality","region","code","country","label","type","prio","id"]
+    adr_row =[]
+    
+    for contacts in phonebook_root:
+        contact = contacts.findall('./contact')
+        for contact in contacts:
+            real_Name = contact.find('./person/realName').text
+            #print(real_Name)
+            
+            try:
+                aid = contact.find('./adr').attrib.get('aid')
+                #print("Aid",aid)
+            except:
+                aid = None
+                #print("No address in xml")
+            
+            if aid is None:
+                adr_row.append({'realName':real_Name, 'aid':'', 'pobox': '', 'ext':'', 'street':'','locality':'','region':'','code':'', 'country':'', 'label':'','type':'','prio': '', 'id':''})
+            else: 
+                for tag in contact.findall('./adr'):
+                    #adr = tag.getchildren()
+                    adr = list(tag.iter())
+                    for child in adr:                      
+                        for lab in child:
+                            if lab.tag == "label":
+                                label = lab.text
+                                # print("Label:",lab.text)
+                                adr_type = lab.attrib['type']
+                                #print('TYPE:',adr_type)
+                                adr_prio = lab.attrib['prio']
+                                #print('PRIO:',adr_prio)
+                                adr_id = lab.attrib['id']
+                                #print('ID:',adr_id)
+                                
+                        if child.tag == "pobox":
+                            if child.text is not None:
+                                pobox = child.text
+                                #print("pobox",child.text)
+                            else:
+                                pobox = None
+                                
+                        if child.tag == "ext":
+                            if child.text is not None:
+                                ext = child.text
+                                #print("ext",child.text)
+                            else:
+                                ext = None    
+                                
+                        if child.tag == "street":
+                            if child.text is not None:
+                                street = child.text
+                                #print("street",child.text)
+                            else:
+                                street = None 
+                                
+                        if child.tag == "locality":
+                            if child.text is not None:
+                                locality = child.text
+                                #print("locality",child.text)
+                            else:
+                                locality = None     
+                            
+                        if child.tag == "region":
+                            if child.text is not None:
+                                region = child.text
+                                #print("region",child.text)
+                            else:
+                                region = None 
+                                
+                        if child.tag == "code":
+                            if child.text is not None:
+                                code = child.text
+                                #print("code",child.text)
+                            else:
+                                code = None
+                                
+                        if child.tag == "country":
+                            if child.text is not None:
+                                country = child.text
+                                #print("country",child.text)
+                            else:
+                                country = None                       
+                            
+                            adr_row.append({'realName':real_Name, 'aid':aid, 'pobox': pobox, 'ext':ext, 'street':street,'locality':locality,'region':region,'code':code, 'country':country, 'label':label,'type':adr_type,'prio': adr_prio, 'id':adr_id})              
+        
+        df_address = pd.DataFrame(adr_row, columns = df_adr_column)
+        #print(df_address)
+        df_address["realName"] = df_address["realName"].astype("string")
+
+            
+    db_record(df_address, db_name)
+    
+    # Dataframe of birthday
+    df_bday_column = ["realName", "bday"]
+    bday_row =[]
+    
+    for contacts in phonebook_root:
+        contact = contacts.findall('./contact')
+        for contact in contacts:
+            real_Name = contact.find('./person/realName').text
+            #print(real_Name)
+            for birthday in contact.findall('./bday'):
+                if birthday.text is not None:
+                    bday = birthday.text
+                else:
+                    bday = None     
+                            
+                #print(f'<bday>{bday}</bday>')
+                bday_row.append({'realName':real_Name, 'bday':bday})
+        df_birthday = pd.DataFrame(bday_row, columns = df_bday_column)
+        df_birthday["realName"] = df_birthday["realName"].astype("string")
+        df_birthday['bday'] = pd.to_datetime(df_birthday['bday'], format='%Y-%m-%d', errors="coerce")
+        #print(df_birthday)
+        #print(df_birthday.info())
+        #print(df_birthday.dtypes)
+    db_record(df_birthday, db_name)
+    
+    # Dataframe of note
+    df_note_column = ["realName", "note"]
+    note_row =[]
+    
+    for contacts in phonebook_root:
+        contact = contacts.findall('./contact')
+        for contact in contacts:
+            real_Name = contact.find('./person/realName').text
+            #print(real_Name)
+            for note in contact.findall('./note'):
+                if note.text is not None:
+                    note = note.text
+                    note = re.sub(r"&(?!amp;)","&amp;", note)
+                else:
+                    note = None                
+                #print(f'<note>{bday}</note>')
+                note_row.append({'realName':real_Name, 'note':note})
+        df_note = pd.DataFrame(note_row, columns = df_note_column)
+        df_note["realName"] = df_note["realName"].astype("string")
+        df_note["note"] = df_note["note"].astype("string")
+        #print(df_birthday)
+        #print(df_note.info())
+        #print(df_note.dtypes)
+    db_record(df_note, db_name)
 
 
 def date_conv(time):
@@ -182,7 +330,7 @@ def date_conv(time):
 
 
 def db_record(table, db_name):
-    """write pandas dataframe to sqlite3 table: contacts, numbers"""
+    """write pandas dataframe to sqlite3 table: contacts, numbers, emails"""
     import sqlite3
     con = sqlite3.connect(db_name)
     
@@ -210,17 +358,44 @@ def db_record(table, db_name):
             # Problem:  If the contacts are twice or mulitiple
             cur.execute('ALTER TABLE emails ADD COLUMN uniqueid INTEGER;')
             cur.execute('UPDATE emails SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = emails.realName);')
+        if "label" in table:
+            table.to_sql("address", con, if_exists="replace")
+            print('Writing address label to sqlite3 table address')
+            # Create column uniqueid to the table and copy from contacts
+            # Problem:  If the contacts are twice or mulitiple
+            cur.execute('ALTER TABLE address ADD COLUMN uniqueid INTEGER;')
+            cur.execute('UPDATE address SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = address.realName);')
+        if "bday" in table:
+            table.to_sql("birthday", con, if_exists="replace")
+            print('Writing birthday to sqlite3 table birthday')
+            # Create column uniqueid to the table and copy from contacts
+            # Problem:  If the contacts are twice or mulitiple
+            cur.execute('ALTER TABLE birthday ADD COLUMN uniqueid INTEGER;')
+            cur.execute('UPDATE birthday SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = birthday.realName);')
+        if "note" in table:
+            table.to_sql("note", con, if_exists="replace")
+            print('Writing note to sqlite3 table note')
+            # Create column uniqueid to the table and copy from contacts
+            # Problem:  If the contacts are twice or mulitiple
+            cur.execute('ALTER TABLE note ADD COLUMN uniqueid INTEGER;')
+            cur.execute('UPDATE note SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = note.realName);')
+        
         con.commit()
     con.close()
        
 if __name__ == '__main__':
     """ Input XML file definition """
+    starttime=timeit.default_timer()
     # xmlfile = select_xml
     # xmlfile = '.\\Source\\FRITZ.Box_Telefonbuch_22.12.20_1605.xml'
     # xmlfile = '.\Source\FRITZ.Box_Telefonbuch_23.12.20_2119_mitBild.xml'
-    #xmlfile = '.\Source\FRITZ.Box_Telefonbuch_iPhone_import-exportIPHONE-von-Fritz22.12.20_1739.xml'
+    # xmlfile = '.\Source\FRITZ.Box_Telefonbuch_iPhone_import-exportIPHONE-von-Fritz22.12.20_1739.xml'
     # xmlfile = '.\Source\Telefonkontakte iPhone K 22.12.20 16 18.xml'
-    read_xml()
+    # xmlfile = '.\\Intern_Source\\vCard_iCloude_Kontakte_iPhone_266_20201224_output.xml'
+    # xmlfile = '.\\Intern_Source\\vCard_iCloude_Kontakte_iPhone_266_20210123_output_adr_bday_note.xml'
+    #xmlfile = '.\\output.xml'
+    #read_xml(xmlfile, "vCardTest.db")
     print('Finished')
+    print("Laufzeit:", timeit.default_timer()-starttime)
 
     

@@ -19,6 +19,8 @@
 # - warrenty,
 # - no relation with the German Company AVM!
 #
+# row 140: self.e_uniqueid spinbox range set to 0...9999 for development
+#
 # Author (Pseudonym): Hermann12; Date: 24.12.2020
 ############################################################
 import tkinter as tk
@@ -30,9 +32,10 @@ import sqlite3
 import os
 import shutil
 
-from xml_pandas_sqlite import read_xml
+from xml_pandas_sqlite import read_xml 
 from create_uid import create_uniqueid
 from primary_foreign_key import create_key
+from vCard2xml import read_vcard
 
 
 ############################################################
@@ -137,7 +140,10 @@ class Phonebook:
         self.e_mail = ttk.Combobox(address_frame, width = 40)
         self.e_mail.grid(row=5, column=1, columnspan=3, padx=(5,20), pady=(15,5), sticky='WE')
         
-        self.e_uniqueid = ttk.Entry(address_frame, width = 4, textvariable=self.uid_name, state='readonly')
+        self.e_uniqueid = ttk.Spinbox(address_frame, width = 7, textvariable=self.uid_name, increment=1, from_=0, to=9999, command=self.spin_select, state='readonly')
+        self.e_uniqueid.bind('<Up>', self.spin_select_key)
+        self.e_uniqueid.bind('<Down>', self.spin_select_key)
+        #self.e_uniqueid = ttk.Entry(address_frame, width = 4, textvariable=self.uid_name, state='readonly')
         self.e_uniqueid.grid(row=6, column=1, padx=(5,5), pady=(15,20), sticky='W')
         
         self.e_uniqueid_btn = ttk.Button(address_frame, text="Create uid", command=self.create_uniqueid) # Funktion anpassen
@@ -225,9 +231,9 @@ class Phonebook:
         self.xml_import_btn = ttk.Button(self.xml_frame, text="Import XML", width=3, command=self.search_import_xml) # Funktion anpassen
         self.xml_import_btn.grid(row=0, column=7, ipadx= 75, padx=(15,15), pady=(5,10), sticky="w")
         
-        self.xml_export_btn = ttk.Button(self.xml_frame, text="Export XML", width=3) # Funktion anpassen
-        self.xml_export_btn.grid(row=0, column=8, ipadx= 75, padx=(15,15), pady=(5,10), sticky="w")        
-        self.xml_export_btn.config(state=tk.DISABLED)
+        self.vcf_convert_btn = ttk.Button(self.xml_frame, text="Convert VCF", width=3, command=self.search_import_vcf) # Funktion anpassen
+        self.vcf_convert_btn.grid(row=0, column=8, ipadx= 75, padx=(15,15), pady=(5,10), sticky="w")        
+        #self.vcf_convert_btn.config(state=tk.DISABLED)
 
 
 
@@ -243,16 +249,19 @@ class Phonebook:
         menu.add_cascade(label="File", menu=self.filemenu)
         
         self.filemenu.add_command(label="Connect sqlite3.db", command=self.search_connect_db) # Test: self.open_db
-        self.filemenu.add_command(label="Copy as", command=self.copy_as)
-        self.filemenu.add_command(label="Create Primary Key", command=self.close_db)
+        self.filemenu.add_command(label="Copy .db as ...", command=self.copy_as)
         self.filemenu.add_command(label="Close sqlite3.db", command=self.close_db)
+        self.filemenu.add_separator()
+        self.filemenu.add_command(label="Convert VCF to Phone-Book.xml", command=self.search_import_vcf)
         self.filemenu.add_command(label="Import Phone-Book.xml", command=self.search_import_xml)
+        self.filemenu.add_command(label="Create Primary Key", command=self.close_db)       
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=quit, accelerator="Alt+F4")
 
         optionmenu = Menu(menu, tearoff=0)
         menu.add_cascade(label="Options", menu= optionmenu)
-        optionmenu.add_command(label="Export Schema", command=self.export_schema)
+        optionmenu.add_command(label="Export SQLite Schema", command=self.export_schema)
+        
         
         helpmenu = Menu(menu, tearoff=0)
         menu.add_cascade(label="Help", menu=helpmenu)
@@ -261,6 +270,80 @@ class Phonebook:
 # Menu Funktions of command
 # 
 ###################################################################
+    def spin_select_key(self,event):
+        self.spin_select()
+        
+    
+    def spin_select(self):
+        print(self.uid_name.get())
+        self.clear_field_spin()
+        uniq_id = self.uid_name.get()
+        connection = sqlite3.connect(select_connect_db)
+        print('Database connected.')
+        with connection: 
+            cursor = connection.cursor()
+            cursor.execute("""SELECT contacts.realName, contacts.uniqueid, numbers.number, numbers.type, numbers.prio, numbers.id, numbers.uniqueid, emails.email, emails.classifier FROM contacts
+            LEFT JOIN numbers ON contacts.uniqueid = numbers.uniqueid
+            LEFT JOIN emails ON contacts.uniqueid = emails.uniqueid WHERE contacts.uniqueid=?;""",(uniq_id,))
+            data = cursor.fetchall()
+            print("Out of DB:",data)
+            
+            for row in data:
+                self.realName.set(row[0])
+                print('REAL NAME:',row[0])
+                
+                if row[3] == 'home':
+                    if row[2] not in self.phone_home:
+                        self.phone_home.append(row[2])
+                        print('HOME:',self.phone_home)
+                    if len(self.phone_home) >1 and '' in self.phone_home:
+                        self.phone_home.remove('')
+                                       
+                if row[3] == 'mobile':
+                    if row[2] not in self.mobile:
+                        self.mobile.append(row[2])
+                        print('Mobile:',self.mobile)
+                    if len(self.mobile) >1 and '' in self.mobile:
+                        self.mobile.remove('')
+                
+                if row[3] == 'business':
+                    if row[2] not in self.business:
+                        self.business.append(row[2])
+                        print(row[2])
+                        print('business:',self.business)
+                    if len(self.business) >1 and '' in self.business:
+                        self.business.remove('')
+                    
+                if row[3] == 'fax_work' or row[3] == 'fax_home':
+                    if row[2] not in self.fax:
+                        self.fax.append(row[2])
+                        print(row[2])
+                        print('FAX_WORK/HOME:',self.fax)
+                    if len(self.fax) >1 and '' in self.fax:
+                        self.fax.remove('')
+                        
+                self.e_phone['values'] = self.phone_home
+                self.e_phone.current(0)
+           
+                self.e_mobile['values'] = self.mobile
+                self.e_mobile.current(0)
+        
+                self.e_business['values'] = self.business # Set the value to the new list
+                self.e_business.current(0) # Set the first item of the list as current item
+           
+                self.e_fax['values'] = self.fax
+                self.e_fax.current(0)
+                
+                if row[8] == 'private' or row[8] == 'business' or row[8] == 'other' or row[8] == 'label':
+                    if row[7] not in self.email:
+                        self.email.append(row[7])
+                        print('HOME:',self.email)
+                    if len(self.email) >1 and '' in self.email:
+                        self.email.remove('')
+                        
+                self.e_mail['values'] = self.email
+                self.e_mail.current(0)
+        
 
  
     def menu():
@@ -279,7 +362,7 @@ class Phonebook:
         self.phone_db_var.set(select_connect_db)
         # Disable XML entry, if working with a existing database  
         self.xml_import_btn.config(state=tk.DISABLED)
-        self.xml_export_btn.config(state=tk.DISABLED)
+        self.vcf_convert_btn.config(state=tk.DISABLED)
         self.phone_xml.config(state=tk.DISABLED)
         self.open_db(select_connect_db)
         
@@ -333,10 +416,15 @@ class Phonebook:
         global select_connect_db
         global select_xml
         
-        select_xml = filedialog.askopenfilename(initialdir = "D:\\Daten\\Programmieren\\Python\\python_programme\\Fritz",title = "Select XML export file from AVM Fritz!Box or Fritz!Fon [Phone_Book.xml]", filetypes =(("xml file", "*.xml"),("All Files","*.*")))
-        print('XMLselected',select_xml)
-        # set path in entry
-        self.phone_xml_var.set(select_xml)
+        if len(self.phone_xml_var.get()) == 0:
+            select_xml = filedialog.askopenfilename(initialdir = "D:\\Daten\\Programmieren\\Python\\python_programme\\Fritz",title = "Select XML export file from AVM Fritz!Box or Fritz!Fon [Phone_Book.xml]", filetypes =(("xml file", "*.xml"),("All Files","*.*")))
+            print('XMLselected',select_xml)
+            # set path in entry
+            self.phone_xml_var.set(select_xml)
+        else:
+            select_xml=self.phone_xml_var.get()
+        
+            
         # Disable DB entry, if import XML to sqlite3  
         self.phone_db.config(state=tk.DISABLED)
         self.db_connect_btn.config(state=tk.DISABLED)       
@@ -356,7 +444,7 @@ class Phonebook:
         self.open_db(select_connect_db)
         
         self.xml_import_btn.config(state=tk.DISABLED)
-        self.xml_export_btn.config(state=tk.DISABLED)
+        self.vcf_convert_btn.config(state=tk.DISABLED)
         self.phone_xml.config(state=tk.DISABLED)
         self.phone_db.config(state=tk.NORMAL)
         self.db_connect_btn.config(state=tk.NORMAL)
@@ -389,6 +477,7 @@ class Phonebook:
                 self.lbox.insert('end', row[1])
                 
     def show_name_search(self, event):
+        print('PRINT EVENT:',event)
         self.clear_field()
         widget = event.widget
         selection = widget.curselection()
@@ -434,10 +523,9 @@ class Phonebook:
                     print('FAX_WORK/HOME:',self.fax)
                     if len(self.fax) >1 and '' in self.fax:
                         self.fax.remove('')
-                    
-                self.uid_name.set(row[4])
-            
-            
+              
+                # self.uid_name.set(row[4]) changed: uniqueid from contacts, because not each contact has a number
+                   
                 self.e_phone['values'] = self.phone_home
                 self.e_phone.current(0)
            
@@ -457,12 +545,17 @@ class Phonebook:
             for row in data:
                 if row[1] == 'private' or row[1] == 'business' or row[1] == 'other' or row[1] == 'label':
                     self.email.append(row[0])
-                    print('HOME:',self.phone_home)
+                    print('HOME:',self.email)
                     if len(self.email) >1 and '' in self.email:
                         self.email.remove('')
                         
                 self.e_mail['values'] = self.email
                 self.e_mail.current(0)
+                
+            cursor.execute("SELECT uniqueid FROM contacts WHERE realName=?;",(indName,))
+            uniq_id = cursor.fetchone()
+            print(uniq_id)    
+            self.uid_name.set(uniq_id[0])    
             
     def copy_as(self):
         try:
@@ -485,6 +578,7 @@ class Phonebook:
         self.no_contact.delete(0, 'end')
         self.no_contact.configure(state='readonly')
         self.clear_field()
+        self.vcf_convert_btn.configure(state=tk.NORMAL)
         try:
             connection = sqlite3.connect(select_connect_db)
             connection.commit()
@@ -514,7 +608,28 @@ class Phonebook:
         self.e_uniqueid.configure(state=tk.NORMAL)
         self.e_uniqueid.delete(0,'end')
         self.e_uniqueid.configure(state='readonly')
+        self.uid_name.get()
         self.phone_xml.delete(0,'end')
+        
+    def clear_field_spin(self):
+        self.e_name.delete(0,'end')
+        self.e_phone.delete(0,'end')
+        self.phone_home = ['']
+        self.e_phone['values'] = self.phone_home
+        self.e_mobile.delete(0,'end')
+        self.mobile = ['']
+        self.e_mobile['values'] = self.mobile
+        self.e_business.delete(0,'end')
+        self.business = ['']
+        self.e_business['values'] =self.business
+        self.e_fax.delete(0,'end')
+        self.fax = ['']
+        self.e_fax['values'] = self.fax
+        self.e_mail.delete(0,'end')
+        self.email = ['']
+        self.e_mail['values'] = self.email
+        self.uid_name.get()
+        self.phone_xml.delete(0,'end')    
         
     def export_schema(self):
         try:
@@ -522,7 +637,8 @@ class Phonebook:
             connection = sqlite3.connect(dbfile)
             cursor = connection.cursor()
             cursor.execute("SELECT SQL FROM sqlite_master WHERE SQL NOT NULL") # SQL NOT NULL or type='table'
-            sql_schema = open(select_connect_db+"SQL_SCHEMA_XML_READER.txt", mode="w", encoding="utf-8")
+            filename = select_connect_db.replace('.db','')
+            sql_schema = open(filename+"_SQL-SCHEMA.sql", mode="w", encoding="utf-8")
             for row in cursor.fetchall():
                 print(row[0])
                 sql_schema.write(f"{row[0]}\n")
@@ -533,8 +649,25 @@ class Phonebook:
             self._msgBox_error_1()
             print("Database not selected or unknown")
         finally:
-            print("SCHEMA writting finished!")
+            print("SCHEMA function finished!")
             
+            
+    def search_import_vcf(self):
+        # search a iCloud vcf file and create a xml file for database import#
+        global select_connect_db
+        global select_xml
+        
+        self.select_vcf = filedialog.askopenfilename(initialdir = "D:\\Daten\\Programmieren\\Python\\python_programme\\Fritz",title = "Select vcf file from iCloud to convert to xml for sqlite3 import", filetypes =(("vcf file", "*.vcf"),("All Files","*.*")))
+        print('VCF selected',self.select_vcf)     
+        
+        print('Choose your xml file name, for later import into sqlite database')
+        # select_connect_db = filedialog.asksaveasfilename(initialdir = "D:\\Daten\\Programmieren\\Python\\python_programme\\Fritz",title = "NEW database name ? [*.db]", filetypes =(("sqlite3 file", "*.db"),("All Files","*.*")))
+        self.select_connect_xml = filedialog.asksaveasfilename(defaultextension=".xml", initialdir = "D:\\Daten\\Programmieren\\Python\\python_programme\\Fritz",title = "NEW xml file name ? [*.xml]", filetypes =(("xml file", "*.xml"),("All Files","*.*")))
+        print('XML file name given:',self.select_connect_xml)
+        
+        read_vcard(self.select_vcf, self.select_connect_xml)
+        # set path in entry
+        self.phone_xml_var.set(self.select_connect_xml)
 
 
     def quit(self):
@@ -543,7 +676,8 @@ class Phonebook:
         exit()
         
     def about_XML_phonebook(self):
-        msg.showinfo('XML Phone Book Database','This is a beta version V0.2 (Corona): \nDate: Jan 2021 \nAuthor: Hermann12')    
+        msg.showinfo('XML Phone Book Database',"""This is a beta version V0.3 (Corona): \nDate: Mar 2021 \nAuthor: Hermann12
+                     \n\nCreate a SQLite3 database:\nImport a phonebook XML file form AVM Fritz!Box\nor\nImport contacts VCF file out of Apple iCloud""")    
         
     def _msgBox_error_1(self):
         msg.showerror('Database NameError!','Database name error!, Select a valid sqlite3 db file, please. ')

@@ -1,3 +1,11 @@
+############################################################
+# Create unique id to the tables after XML Import
+#
+# XML_Phone_Book_Database
+#
+## Author (Pseudonym): Hermann12; Date: 10.01.2021
+############################################################
+
 import sqlite3
 
 def create_uniqueid(db_file):
@@ -40,12 +48,23 @@ def create_uniqueid(db_file):
 
     cursor.execute('UPDATE emails SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = emails.realName);')
     connection.commit()
+    
+    cursor.execute('UPDATE address SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = address.realName);')
+    connection.commit()
+    
+    cursor.execute('UPDATE birthday SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = birthday.realName);')
+    connection.commit()
+    
+    cursor.execute('UPDATE note SET uniqueid =(SELECT uniqueid FROM contacts WHERE contacts.realName = note.realName);')
+    connection.commit()
+    
+    
     connection.close()
     print('Process finished, database closed!')
 
 
 if __name__ == '__main__':
     """ Input XML file definition """
-    db_file = "04_Fritz_Phonebook.db"
-    create_uniqueid(db_file)
+    # db_file = "04_Fritz_Phonebook.db"
+    # create_uniqueid(db_file)
     print('Finished')
