@@ -41,21 +41,21 @@ CREATE TABLE "address" (
           "label" TEXT,
           "type" TEXT,
           "prio" TEXT,
-          "id" TEXT,
-		      "uniqueid" INTEGER,
+          "id" TEXT, 
+          "uniqueid" INTEGER,
           FOREIGN KEY(uniqueid) REFERENCES contacts(uniqueid)
           )
 CREATE TABLE "birthday" (
           "index" INTEGER,
           "realName" TEXT,
-          "bday" TIMESTAMP,
-		      "uniqueid" INTEGER,
+          "bday" TIMESTAMP, 
+          "uniqueid" INTEGER,
           FOREIGN KEY(uniqueid) REFERENCES contacts(uniqueid)
           )
 CREATE TABLE "note" (
           "index" INTEGER,
           "realName" TEXT,
-          "note" TEXT,
-		      "uniqueid" INTEGER,
+          "note" TEXT, 
+          "uniqueid" INTEGER,
           FOREIGN KEY(uniqueid) REFERENCES contacts(uniqueid)
           )
