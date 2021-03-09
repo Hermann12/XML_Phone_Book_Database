@@ -640,8 +640,8 @@ class Phonebook:
             filename = select_connect_db.replace('.db','')
             sql_schema = open(filename+"_SQL-SCHEMA.sql", mode="w", encoding="utf-8")
             for row in cursor.fetchall():
-                print(row[0])
-                sql_schema.write(f"{row[0]}\n")
+                print(row[0]+";")
+                sql_schema.write(f"{row[0]};\n")
             self._show_info_1()
             sql_schema.close()
             connection.close()    
