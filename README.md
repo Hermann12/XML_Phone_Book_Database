@@ -1,7 +1,7 @@
-# XML Phone Book Database 
+# XML Phone Book Database (from Friz!Box Router/App[xml] or iCloud Contacts [vcf to xml])
 ##### (sqlite3)
 Create a SQLite3 database via import of XML file created by Fritz!Box* or Fritz!Fon* App. 
-As a scond option a vCard.vcf file exported from Apple iCloud* contacts could converted to xml and afterwards imported in a SQLite3 database.
+As a second option a vCard.vcf file exported from Apple iCloud* contacts could converted to xml and afterwards imported in a SQLite3 database.
 This second option create a database with post address, birthday and notes from your iPhone* contacts.
 
 
