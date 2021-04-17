@@ -1,5 +1,5 @@
 # XML Phone Book Database 
-## (from Fritz!Box Router/App[xml] or iCloud Contacts [vcf to xml] to sqlite3)
+## (from Fritz!Box Router/App[xml] or iCloud Contacts [vcf to xml] to SQLite3)
 
 Create a SQLite3 database via import of XML file created by Fritz!Box* or Fritz!Fon* App. 
 As a second option a vCard.vcf file exported from Apple iCloud* contacts could converted to xml and afterwards imported in a SQLite3 database.
